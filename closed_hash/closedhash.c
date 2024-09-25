@@ -45,27 +45,30 @@ void initDictionary(StudDictionary *S){
 }
 
 bool insertStudent(StudDictionary *S, Student stud){
-    int hash = getHash(stud);
-    if (S->count < (S->max * 0.8)){
-        int i = hash;
-        for (; S->data[i].studID != Empty; i = (i + 1) % S->max){
-            if (S->data[i].studID == Deleted){
-                break;
-            }
-            if (S->data[i].studID == stud.studID){
-                printf("already exists\n");
-                return false;
-            } 
-        }
-        
-        S->data[i] = stud;
-        S->count++;
-        return true;
-        
     
-    } else{
+    int hash = getHash(stud);
+    
+    if (S->count >= (S->max * 0.8)){
         resizeDictionary(S);
     }
+    
+    int i = hash;
+    for (; S->data[i].studID != Empty; i = (i + 1) % S->max){
+        if (S->data[i].studID == Deleted){
+            break;
+        }
+        if (S->data[i].studID == stud.studID){
+            printf("already exists\n");
+            return false;
+        } 
+    }
+    
+    S->data[i] = stud;
+    S->count++;
+    return true;
+        
+    
+    
 }
 
 bool removeStudent(StudDictionary *S, Student stud){
