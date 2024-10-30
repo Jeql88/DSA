@@ -36,7 +36,7 @@ void insertFlight(PriorityQueue *list, Flight a);
 int comparePrio(Flight a, Flight b);
 void display(PriorityQueue list);
 Flight dequeue(PriorityQueue* list);
-void flightsBefore(PriorityQueue list, Flight a);
+void flightsBefore(PriorityQueue *list, Flight a, PriorityQueue* new);
 
 int main(){
     Flight flightList[MAX];
@@ -68,7 +68,8 @@ int main(){
     fclose(fp);
     
     PriorityQueue flights;
-    Flight beforeFlight = flightList[6];
+    
+    
     
     Flight p;
     fp = fopen("destination_file.dat","rb");
@@ -77,33 +78,40 @@ int main(){
             insertFlight(&flights,p);
         }
     }
+
     
     display(flights);
     fclose(fp);
     
-    fp = fopen("before.dat","wb");
+    PriorityQueue new;
+    new.count = 0;
+    flightsBefore(&flights,flightList[6], &new);
+    display(new);
     
-    for (int i = 0; i < flights.count; ++i){
+}
+void flightsBefore(PriorityQueue *list, Flight a, PriorityQueue* new){
+    FILE *fp;
+    int og_count = list->count;
+    fp = fopen("new_file.dat","wb");
+    
+    for (int i = 0; i < og_count ; ++i){
         if (fp != NULL){
-            if (flights.elems[i].flightCode != beforeFlight.flightCode){
-                fwrite(flights.elems+i,sizeof(Flight),1,fp);
-            } else {
+            Flight dequeuedFlight = dequeue(list);
+            if (dequeuedFlight.flightCode == a.flightCode){
                 break;
             }
-            
+            fwrite(&dequeuedFlight,sizeof(Flight),1,fp);
         }
     }
-    
     fclose(fp);
-    
-    fp = fopen("before.dat","rb");
+    Flight p;
+    fp = fopen("new_file.dat","rb");
     if (fp != NULL){
         while (fread(&p, sizeof(Flight),1,fp)){
-            displayFlight(p);
+            insertFlight(new,p);
         }
     }
     fclose(fp);
-    
     
 }
 
