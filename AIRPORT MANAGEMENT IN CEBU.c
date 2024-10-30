@@ -68,7 +68,7 @@ int main(){
     fclose(fp);
     
     PriorityQueue flights;
-    Flight beforeFlight = flightList[3];
+    Flight beforeFlight = flightList[6];
     
     Flight p;
     fp = fopen("destination_file.dat","rb");
@@ -87,7 +87,8 @@ int main(){
         if (fp != NULL){
             if (flights.elems[i].flightCode != beforeFlight.flightCode){
                 fwrite(flights.elems+i,sizeof(Flight),1,fp);
-                dequeue(&flights);
+            } else {
+                break;
             }
             
         }
