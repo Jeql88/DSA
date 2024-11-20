@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define MAX_VERTEX 6
-#define SENTINEL 0xFFFF
+#define SENTINEL 100
 
 typedef char vertexType;
 typedef int labelType;
@@ -62,6 +62,8 @@ void recursionListDFS(directedAdjList G, vertexType src, Boolean visArr[]);
 void iterativeListBFS(directedAdjList a, vertexType curr);
 void iterativeMatrixBFS(labeledAdjMatrix a, vertexType curr);
 void recursionMatrixDFS(labeledAdjMatrix b, vertexType curr, Boolean visArr[]);
+labeledAdjMatrix floydWarshall(labeledAdjMatrix b);
+
 
 //to do deleteList and deleteMatrix
 void main(){
@@ -88,6 +90,34 @@ void main(){
     iterativeListBFS(a,'A');
     printf("\n");
     iterativeMatrixBFS(b,'A');
+    
+    labeledAdjMatrix c = floydWarshall(b);
+    displayAdjMatrix(c);
+}
+labeledAdjMatrix floydWarshall(labeledAdjMatrix b){
+    
+    labeledAdjMatrix m;
+    m.edgeCount = 0;
+    for (int i = 0; i < MAX_VERTEX; ++i){
+        for (int k = 0; k < MAX_VERTEX; ++k){
+            if (i == k){
+                m.matrix[i][k] = 0;
+            } else {
+                m.matrix[i][k] = b.matrix[i][k];
+            }
+        }
+    }
+    
+    for (int i = 0; i < MAX_VERTEX; ++i){
+        for (int j = 0; j < MAX_VERTEX; ++j){
+            for (int k = 0; k < MAX_VERTEX; ++k){
+                if ((b.matrix[i][k] + b.matrix[j][i]) < b.matrix[j][k]){
+                    m.matrix[j][k] = b.matrix[i][k] + b.matrix[j][i];
+                }
+            }
+        }
+    }
+    return m;
 }
 void recursionMatrixDFS(labeledAdjMatrix b, vertexType curr, Boolean visArr[]){
     visArr[curr-'A'] = True;
@@ -257,9 +287,9 @@ void displayAdjMatrix(labeledAdjMatrix L){
         printf("\n %c :: ", 'A'+i);
         for (int k = 0; k < MAX_VERTEX; ++k){
             if (L.matrix[i][k] == SENTINEL){
-                printf(" SENTINEL");
+                printf(" INF");
             } else {
-                printf(" %d",L.matrix[i][k]);
+                printf(" %3d",L.matrix[i][k]);
             }
         }
     }
@@ -281,7 +311,7 @@ void displayAdjList(directedAdjList L){
             printf(" NULL");
         } else {
             for (temp = L.head[i]; temp != NULL; temp = temp->link){
-                printf(" %c (%d)\t",temp->info.adjVertex, temp->info.weight);
+                printf(" %c (%3d)\t",temp->info.adjVertex, temp->info.weight);
             }
         } 
     }
